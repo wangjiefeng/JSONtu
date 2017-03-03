@@ -23,6 +23,15 @@ static int test_pass = 0;
 //进一步简化宏调用
 #define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE((expect) == (actual), expect, actual, "%d")
 
+//重构test_parse_expect_value
+#define TEST_ERROR(error, json)\
+    do {\
+		lept_value v;\
+		v.type = LEPT_FALSE;\
+		EXPECT_EQ_INT(error, lept_parse(&v, json));\
+		EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));\
+	} while(0)
+
 //测试解析NULL
 static void test_parse_null() {
     lept_value v;
@@ -47,15 +56,8 @@ static void test_parse_false() {
 
 //测试解析
 static void test_parse_expect_value() {
-    lept_value v;
-
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, ""));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
-
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, " "));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	TEST_ERROR((LEPT_PARSE_EXPECT_VALUE, "");
+	TEST_ERROR((LEPT_PARSE_EXPECT_VALUE, " ");
 }
 
 //测试解析非法值
